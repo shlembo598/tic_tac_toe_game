@@ -9,6 +9,9 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<GameFieldButton> buttonsList;
+  var player1;
+  var player2;
+  var activePlayer;
 
   @override
   void initState() {
@@ -33,23 +36,18 @@ class _HomePageState extends State<HomePage> {
                     padding: MaterialStateProperty.all(EdgeInsets.all(8.0)),
                     backgroundColor: MaterialStateProperty.resolveWith<Color>(
                       (Set<MaterialState> states) {
-                        if (states.contains(MaterialState.pressed))
-                          return Theme.of(context)
-                              .colorScheme
-                              .primary
-                              .withOpacity(0.5);
-                        else if (states.contains(MaterialState.disabled))
+                        if (states.contains(MaterialState.disabled))
                           return buttonsList[i].background;
-                        return null; // Use the component's default.
+                        return buttonsList[i].background; // default.
                       },
                     ),
                   ),
-                  onPressed: () {  },
+                  onPressed: buttonsList[i].enabled?()=> playGame(buttonsList[i]) : null,
                   child: Text(
                     buttonsList[i].text,
                     style: TextStyle(
                         color: Theme.of(context).textTheme.bodyText1.color,
-                        fontSize: 20.0),
+                        fontSize: 30.0),
                   ),
                 ),
               ), gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -62,6 +60,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   List<GameFieldButton> doInit() {
+    player1 = [];
+    player2 = [];
+    activePlayer =1;
+
     var gameFiaeldButtons = <GameFieldButton>[
       new GameFieldButton(id: 1),
       new GameFieldButton(id: 2),
@@ -74,5 +76,82 @@ class _HomePageState extends State<HomePage> {
       new GameFieldButton(id: 9),
     ];
     return gameFiaeldButtons;
+  }
+
+  void playGame(GameFieldButton gameButton){
+    setState(() {
+      if (activePlayer ==1) {
+        gameButton.text = "X";
+        gameButton.background = Colors.teal[400];
+        activePlayer = 2;
+        player1.add(gameButton.id);
+      } else{
+        gameButton.text = "O";
+        gameButton.background = const Color(0xFFA62632);
+        activePlayer = 1;
+        player2.add(gameButton.id);
+      }
+      gameButton.enabled = false;
+      checkWinner();
+    });
+  }
+
+  void checkWinner() {
+    var winner = -1;
+    if (player1.contains(1) && player1.contains(2) && player1.contains(3) ) {
+      winner = 1;
+    }
+    if (player2.contains(1) && player2.contains(2) && player2.contains(3) ) {
+      winner = 2;
+    }
+
+    if (player1.contains(4) && player1.contains(5) && player1.contains(6) ) {
+      winner = 1;
+    }
+    if (player2.contains(4) && player2.contains(5) && player2.contains(6) ) {
+      winner = 2;
+    }
+
+    if (player1.contains(7) && player1.contains(8) && player1.contains(9) ) {
+      winner = 1;
+    }
+    if (player2.contains(7) && player2.contains(8) && player2.contains(9) ) {
+      winner = 2;
+    }
+
+    if (player1.contains(1) && player1.contains(4) && player1.contains(7) ) {
+      winner = 1;
+    }
+    if (player2.contains(1) && player2.contains(4) && player2.contains(7) ) {
+      winner = 2;
+    }
+
+    if (player1.contains(2) && player1.contains(5) && player1.contains(8) ) {
+      winner = 1;
+    }
+    if (player2.contains(2) && player2.contains(5) && player2.contains(8) ) {
+      winner = 2;
+    }
+
+    if (player1.contains(3) && player1.contains(6) && player1.contains(9) ) {
+      winner = 1;
+    }
+    if (player2.contains(3) && player2.contains(6) && player2.contains(9) ) {
+      winner = 2;
+    }
+
+    if (player1.contains(1) && player1.contains(5) && player1.contains(9) ) {
+      winner = 1;
+    }
+    if (player2.contains(1) && player2.contains(5) && player2.contains(9) ) {
+      winner = 2;
+    }
+
+    if (player1.contains(3) && player1.contains(5) && player1.contains(7) ) {
+      winner = 1;
+    }
+    if (player2.contains(3) && player2.contains(5) && player2.contains(7) ) {
+      winner = 2;
+    }
   }
 }
