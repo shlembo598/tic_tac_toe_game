@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tic_tac_toe_game/widgets/game_field_button.dart';
@@ -26,10 +28,18 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Center(child: Text("Tic Tac Toe")),
       ),
-      body: GridView.builder(
-          padding: const EdgeInsets.all(10.0),
-          itemCount: buttonsList.length,
-          itemBuilder: (context, i) => SizedBox(
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(
+            height: 50.0,
+          ),
+          Expanded(
+            child: GridView.builder(
+              padding: const EdgeInsets.all(10.0),
+              itemCount: buttonsList.length,
+              itemBuilder: (context, i) => SizedBox(
                 width: 100,
                 height: 100,
                 child: ElevatedButton(
@@ -43,7 +53,9 @@ class _HomePageState extends State<HomePage> {
                       },
                     ),
                   ),
-                  onPressed: buttonsList[i].enabled?()=> playGame(buttonsList[i]) : null,
+                  onPressed: buttonsList[i].enabled
+                      ? () => playGame(buttonsList[i])
+                      : null,
                   child: Text(
                     buttonsList[i].text,
                     style: TextStyle(
@@ -51,19 +63,35 @@ class _HomePageState extends State<HomePage> {
                         fontSize: 30.0),
                   ),
                 ),
-              ), gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        childAspectRatio: 1.0,
-        crossAxisSpacing: 9.0,
-        mainAxisSpacing: 9.0,
-      ),),
+              ),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                childAspectRatio: 1.0,
+                crossAxisSpacing: 9.0,
+                mainAxisSpacing: 9.0,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: resetGame,
+            child: Text(
+              "RESET GAME",
+              style: TextStyle(fontSize: 15),
+            ),
+            style: ElevatedButton.styleFrom(primary: Colors.teal[400]),
+          ),
+          SizedBox(
+            height: 50.0,
+          )
+        ],
+      ),
     );
   }
 
   List<GameFieldButton> doInit() {
     player1 = [];
     player2 = [];
-    activePlayer =1;
+    activePlayer = 1;
 
     var gameFiaeldButtons = <GameFieldButton>[
       new GameFieldButton(id: 1),
@@ -79,98 +107,129 @@ class _HomePageState extends State<HomePage> {
     return gameFiaeldButtons;
   }
 
-  void playGame(GameFieldButton gameButton){
+  void playGame(GameFieldButton gameButton) {
     setState(() {
-      if (activePlayer ==1) {
+      if (activePlayer == 1) {
         gameButton.text = "X";
         gameButton.background = Colors.teal[400];
         activePlayer = 2;
         player1.add(gameButton.id);
-      } else{
+      } else {
         gameButton.text = "O";
         gameButton.background = const Color(0xFFA62632);
         activePlayer = 1;
         player2.add(gameButton.id);
       }
       gameButton.enabled = false;
-      checkWinner();
+      int winner = checkWinner();
+      if (winner == -1) {
+        if (buttonsList.every((element) => element.text != "")) {
+          showDialog(
+              context: context,
+              builder: (_) => WinnerDialog("Game Tied!",
+                  "Press the reset button to start again!", resetGame));
+        } else {
+          activePlayer == 2 ? autoPlay() : null;
+        }
+      }
     });
   }
 
-  void checkWinner() {
+  int checkWinner() {
     var winner = -1;
-    if (player1.contains(1) && player1.contains(2) && player1.contains(3) ) {
+    if (player1.contains(1) && player1.contains(2) && player1.contains(3)) {
       winner = 1;
     }
-    if (player2.contains(1) && player2.contains(2) && player2.contains(3) ) {
+    if (player2.contains(1) && player2.contains(2) && player2.contains(3)) {
       winner = 2;
     }
 
-    if (player1.contains(4) && player1.contains(5) && player1.contains(6) ) {
+    if (player1.contains(4) && player1.contains(5) && player1.contains(6)) {
       winner = 1;
     }
-    if (player2.contains(4) && player2.contains(5) && player2.contains(6) ) {
+    if (player2.contains(4) && player2.contains(5) && player2.contains(6)) {
       winner = 2;
     }
 
-    if (player1.contains(7) && player1.contains(8) && player1.contains(9) ) {
+    if (player1.contains(7) && player1.contains(8) && player1.contains(9)) {
       winner = 1;
     }
-    if (player2.contains(7) && player2.contains(8) && player2.contains(9) ) {
+    if (player2.contains(7) && player2.contains(8) && player2.contains(9)) {
       winner = 2;
     }
 
-    if (player1.contains(1) && player1.contains(4) && player1.contains(7) ) {
+    if (player1.contains(1) && player1.contains(4) && player1.contains(7)) {
       winner = 1;
     }
-    if (player2.contains(1) && player2.contains(4) && player2.contains(7) ) {
+    if (player2.contains(1) && player2.contains(4) && player2.contains(7)) {
       winner = 2;
     }
 
-    if (player1.contains(2) && player1.contains(5) && player1.contains(8) ) {
+    if (player1.contains(2) && player1.contains(5) && player1.contains(8)) {
       winner = 1;
     }
-    if (player2.contains(2) && player2.contains(5) && player2.contains(8) ) {
+    if (player2.contains(2) && player2.contains(5) && player2.contains(8)) {
       winner = 2;
     }
 
-    if (player1.contains(3) && player1.contains(6) && player1.contains(9) ) {
+    if (player1.contains(3) && player1.contains(6) && player1.contains(9)) {
       winner = 1;
     }
-    if (player2.contains(3) && player2.contains(6) && player2.contains(9) ) {
+    if (player2.contains(3) && player2.contains(6) && player2.contains(9)) {
       winner = 2;
     }
 
-    if (player1.contains(1) && player1.contains(5) && player1.contains(9) ) {
+    if (player1.contains(1) && player1.contains(5) && player1.contains(9)) {
       winner = 1;
     }
-    if (player2.contains(1) && player2.contains(5) && player2.contains(9) ) {
+    if (player2.contains(1) && player2.contains(5) && player2.contains(9)) {
       winner = 2;
     }
 
-    if (player1.contains(3) && player1.contains(5) && player1.contains(7) ) {
+    if (player1.contains(3) && player1.contains(5) && player1.contains(7)) {
       winner = 1;
     }
-    if (player2.contains(3) && player2.contains(5) && player2.contains(7) ) {
+    if (player2.contains(3) && player2.contains(5) && player2.contains(7)) {
       winner = 2;
     }
-    
+
     if (winner != -1) {
       if (winner == 1) {
-        showDialog(context: context,
-            builder: (_) => WinnerDialog("You Won!", 'Press reset button to play again!', resetGame));
-      }  else {
-        showDialog(context: context,
-            builder: (_) => WinnerDialog("Ai Won!", 'Press reset button to play again!', resetGame));
+        showDialog(
+            context: context,
+            builder: (_) => WinnerDialog(
+                "You Won!", 'Press reset button to play again!', resetGame));
+      } else {
+        showDialog(
+            context: context,
+            builder: (_) => WinnerDialog(
+                "Ai Won!", 'Press reset button to play again!', resetGame));
       }
-    }  
+    }
+    return winner;
   }
-  
 
   void resetGame() {
-    if(Navigator.canPop(context)) Navigator.pop(context);
+    if (Navigator.canPop(context)) Navigator.pop(context);
     setState(() {
       buttonsList = doInit();
     });
   }
+
+  autoPlay() {
+    var emptyCells = [];
+    var list = List.generate(9, (index) => index + 1);
+    for (var cellId in list) {
+      if (!(player1.contains(cellId) || player2.contains(cellId))) {
+        emptyCells.add(cellId);
+      }
+    }
+    var random = Random();
+    var randIndex = random.nextInt(emptyCells.length-1);
+    var cellId = emptyCells[randIndex];
+    int i = buttonsList.indexWhere((element) => element.id == cellId);
+    playGame(buttonsList[i]);
+  }
+
+
 }
