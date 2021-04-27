@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tic_tac_toe_game/widgets/game_field_button.dart';
+import 'package:tic_tac_toe_game/widgets/winners_dialog.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -153,5 +154,23 @@ class _HomePageState extends State<HomePage> {
     if (player2.contains(3) && player2.contains(5) && player2.contains(7) ) {
       winner = 2;
     }
+    
+    if (winner != -1) {
+      if (winner == 1) {
+        showDialog(context: context,
+            builder: (_) => WinnerDialog("You Won!", 'Press reset button to play again!', resetGame));
+      }  else {
+        showDialog(context: context,
+            builder: (_) => WinnerDialog("Ai Won!", 'Press reset button to play again!', resetGame));
+      }
+    }  
+  }
+  
+
+  void resetGame() {
+    if(Navigator.canPop(context)) Navigator.pop(context);
+    setState(() {
+      buttonsList = doInit();
+    });
   }
 }
